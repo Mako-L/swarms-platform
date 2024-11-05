@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect, useMemo } from "react"
+import { useState, useCallback, useEffect, useMemo, useRef } from "react"
 import ReactFlow, {
   Node,
   Edge,
@@ -53,6 +53,9 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { experimental_createProviderRegistry as createProviderRegistry, generateText } from 'ai'
 import { Card } from "../spread_sheet_swarm/ui/card"
 import { Input } from "../spread_sheet_swarm/ui/input"
+import { trpc as api } from '@/shared/utils/trpc/trpc';
+import debounce from 'lodash/debounce';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 
 // Create provider registry
@@ -68,6 +71,53 @@ type AgentModel = "gpt-3.5-turbo" | "gpt-4" | "claude-2" | "gpt-4-turbo"
 type DataSource = "Wikipedia" | "ArXiv" | "News API" | "Custom API"
 type SwarmArchitecture = "Concurrent" | "Sequential" | "Hierarchical"
 type ReactFlowNode = Node<AgentData>;
+
+
+
+// Define types that exactly match your Zod schema
+type NodeData = {
+  id: string;
+  name: string;
+  type: string;
+  model: string;
+  systemPrompt: string;
+  clusterId?: string;
+  isProcessing?: boolean;
+  lastResult?: string;
+  dataSource?: string;
+  dataSourceInput?: string;
+  [key: string]: unknown; // Add index signature to match passthrough behavior
+};
+
+type SaveFlowNode = {
+  id: string;
+  type: string;
+  position: {
+    x: number;
+    y: number;
+  };
+  data: NodeData;
+  [key: string]: unknown; // Add index signature to match passthrough behavior
+};
+
+type SaveFlowEdge = {
+  id: string;
+  source: string;
+  target: string;
+  type?: string;
+  animated?: boolean;
+  style?: {
+    stroke: string;
+  };
+  markerEnd?: {
+    type: string;
+    color: string;
+  };
+  data?: {
+    label: string;
+  };
+  [key: string]: unknown; // Add index signature to match passthrough behavior
+};
 
 
 interface AgentData {
@@ -319,7 +369,7 @@ const edgeTypes: EdgeTypes = {
 
 // Add this type to better handle flow data
 interface FlowData {
-  nodes: any[];
+  nodes: any;
   edges: Edge[];
   architecture: SwarmArchitecture;
   results: { [key: string]: string };
@@ -333,7 +383,7 @@ export function EnhancedAgentSwarmManagementComponent() {
   const searchParams = useSearchParams();
 
   // Make sure your useNodesState is properly typed
-  const [nodes, setNodes, onNodesChange] = useNodesState<any[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
   // const [nodes, setNodes, onNodesChange] = useNodesState<AgentData>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([])
   const [task, setTask] = useState("")
@@ -347,23 +397,26 @@ export function EnhancedAgentSwarmManagementComponent() {
   // Add TRPC mutations and queries
   const saveFlowMutation = api.dnd.saveFlow.useMutation();
   const getCurrentFlowQuery = api.dnd.getCurrentFlow.useQuery(
-    { flowId: searchParams?.get('flowId') || undefined },
     { 
+      flowId: searchParams?.get('flowId') || undefined 
+    },
+    {
       enabled: !!searchParams?.get('flowId'),
-      onSuccess: (data:any) => {
-        if (data) {
-          // Update JSON representation whenever we get new data
-          const swarmData = {
-            nodes: data.nodes,
-            edges: data.edges,
-            architecture: data.architecture,
-            results: data.results,
-          };
-          setSwarmJson(JSON.stringify(swarmData, null, 2));
-        }
-      }
     }
   );
+
+  useEffect(() => {
+    if (getCurrentFlowQuery.data) {
+      const swarmData = {
+        nodes: getCurrentFlowQuery.data.nodes,
+        edges: getCurrentFlowQuery.data.edges,
+        architecture: getCurrentFlowQuery.data.architecture,
+        results: getCurrentFlowQuery.data.results,
+      };
+      setSwarmJson(JSON.stringify(swarmData, null, 2));
+    }
+  }, [getCurrentFlowQuery.data]);
+  
   const getAllFlowsQuery = api.dnd.getAllFlows.useQuery();
   const setCurrentFlowMutation = api.dnd.setCurrentFlow.useMutation();
 
@@ -386,7 +439,7 @@ export function EnhancedAgentSwarmManagementComponent() {
 
   // Update the assignment
   stateRef.current = {
-    nodes: nodes as any[],
+    nodes: nodes as any,
     edges,
     taskResults
   };
@@ -526,7 +579,7 @@ export function EnhancedAgentSwarmManagementComponent() {
   );
 
 
-  const addAgent = (agent: AgentData) => {
+  const addAgent = useCallback((agent: AgentData) => {
     const newNode: ReactFlowNode = {
       id: `${nodes.length + 1}`,
       type: "agent",
@@ -580,8 +633,8 @@ export function EnhancedAgentSwarmManagementComponent() {
     }
     // @ts-ignore
     setNodes((nds: Node<ReactFlowNode[], string | undefined>[]) => [...nds, newNode]);
-    saveVersion();
-  };
+    //saveVersion();
+  }, [nodes, setNodes]);
 
   const updateNodeData = (id: string, updatedData: AgentData) => {
     setNodes((nds: Node<ReactFlowNode[], string | undefined>[]) =>
@@ -589,7 +642,7 @@ export function EnhancedAgentSwarmManagementComponent() {
         node.id === id ? { ...node, data: { ...node.data, ...updatedData } } : node
       )
     );
-    saveVersion();
+    //saveVersion();
   };
 
   // Expose the updateNodeData function to the window object
@@ -636,7 +689,7 @@ export function EnhancedAgentSwarmManagementComponent() {
   
       // Reset edge animations
       setEdges((eds) => eds.map(edge => ({ ...edge, animated: false, style: { ...edge.style, stroke: "#8E8E93" } })))
-      updateCSV(newResults);
+   //   updateCSV(newResults);
   
       console.log("Task results:", results)
     } catch (error) {
@@ -648,7 +701,7 @@ export function EnhancedAgentSwarmManagementComponent() {
   
     setTask("")
     updateSwarmJson()
-    saveVersion()
+    //saveVersion()
   }
 
   const runConcurrentSwarm = async () => {
@@ -797,7 +850,7 @@ export function EnhancedAgentSwarmManagementComponent() {
           setSwarmArchitecture(swarmData.architecture || "Concurrent")
           setTaskResults(swarmData.results || {})
           updateSwarmJson()
-          saveVersion()
+          //saveVersion()
           setPopup({ message: 'Swarm configuration loaded successfully', type: 'success' });
         } catch (error) {
           console.error('Error parsing JSON:', error)
@@ -808,62 +861,108 @@ export function EnhancedAgentSwarmManagementComponent() {
     }
   }
 
-  // Modify the save version function to properly handle flow data
   const saveVersionStable = useCallback(async () => {
     try {
-      // Create a properly structured flow data object
-      const flowData = {
-        flow_id: currentFlowId, // Make sure to include the current flow ID
-        nodes: nodes.map(node => ({
-          ...node,
+      // Transform nodes to match the expected schema
+      const validNodes: SaveFlowNode[] = nodes.map((node) => {
+        const { id, type, position, data, ...rest } = node;
+        return {
+          id,
+          type: type || 'default',
+          position: {
+            x: position.x,
+            y: position.y,
+          },
           data: {
-            ...node.data,
-            // Ensure all required fields are present
-            id: node.data?.id || '',
-            name: node.data?.name || '',
-            type: node.data?.type || '',
-            model: node.data?.model || '',
-            systemPrompt: node.data?.systemPrompt || '',
-            clusterId: node.data?.clusterId || '',
-            isProcessing: node.data?.isProcessing || false,
-            lastResult: node.data?.lastResult || '',
-            dataSource: node.data?.dataSource,
-            dataSourceInput: node.data?.dataSourceInput,
-          }
-        })),
-        edges: edges.map(edge => ({
-          ...edge,
-          // Ensure edge data is properly structured
-          data: edge.data || { label: 'Connection' }
-        })),
+            id: data?.id || id,
+            name: data?.name || '',
+            type: data?.type || 'default',
+            model: data?.model || '',
+            systemPrompt: data?.systemPrompt || '',
+            clusterId: data?.clusterId,
+            isProcessing: data?.isProcessing || false,
+            lastResult: data?.lastResult || '',
+            dataSource: data?.dataSource,
+            dataSourceInput: data?.dataSourceInput,
+            ...data
+          },
+          ...rest
+        };
+      });
+  
+      // Transform edges to match the expected schema
+      const validEdges: any[] = edges.map((edge) => {
+        const { id, source, target, ...rest } = edge;
+        return {
+          id,
+          source,
+          target,
+          type: rest.type,
+          animated: rest.animated,
+          style: rest.style ? {
+            stroke: rest.style.stroke || '#000000',
+          } : undefined,
+          markerEnd: rest.markerEnd ? {
+            type: typeof rest.markerEnd === 'string' ? rest.markerEnd : (rest.markerEnd as any)?.type || 'arrow',
+            color: (rest.markerEnd as any)?.color || '#000000',
+          } : undefined,
+          data: rest.data || { label: 'Connection' },
+        };
+      });
+  
+      // Create the flow data object
+      const flowData = {
+        flow_id: currentFlowId || undefined,
+        nodes: validNodes,
+        edges: validEdges,
         architecture: swarmArchitecture,
-        results: taskResults,
-      };
-
-      // Always pass the flowData with flow_id to the mutation
+        results: taskResults || {},
+      } as const; // Use const assertion to preserve literal types
+  
+      // Save the flow
       const result = await saveFlowMutation.mutateAsync(flowData);
       
-      // Only update URL and currentFlowId if this is a new flow
       if (!currentFlowId && result.id) {
         const newUrl = new URL(window.location.href);
         newUrl.searchParams.set('flowId', result.id);
         router.replace(newUrl.pathname + newUrl.search);
         setCurrentFlowId(result.id);
       }
-
+  
       setPopup({ message: 'Flow saved successfully', type: 'success' });
-      
-      // Refresh the flows list if needed
       await getAllFlowsQuery.refetch();
       
     } catch (error) {
       console.error('Error saving flow:', error);
       setPopup({ message: 'Failed to save flow', type: 'error' });
     }
-  }, [nodes, edges, swarmArchitecture, taskResults, saveFlowMutation, router, currentFlowId, getAllFlowsQuery]);
-
-
-
+  }, [
+    nodes,
+    edges,
+    swarmArchitecture,
+    taskResults,
+    saveFlowMutation,
+    router,
+    currentFlowId,
+    getAllFlowsQuery,
+  ]);
+  
+  // Type guard if needed
+  const isValidSaveFlowNode = (node: unknown): node is SaveFlowNode => {
+    return (
+      typeof node === 'object' &&
+      node !== null &&
+      'id' in node &&
+      'type' in node &&
+      'position' in node &&
+      'data' in node &&
+      typeof (node as any).data.id === 'string' &&
+      typeof (node as any).data.name === 'string' &&
+      typeof (node as any).data.type === 'string' &&
+      typeof (node as any).data.model === 'string' &&
+      typeof (node as any).data.systemPrompt === 'string'
+    );
+  };
   // Replace the existing save-related code with this implementation
   const debouncedSave = useMemo(
     () =>
@@ -909,7 +1008,7 @@ export function EnhancedAgentSwarmManagementComponent() {
 
     // Update current state ref
     stateRef.current = {
-      nodes: nodes as any[],
+      nodes: nodes,
       edges,
       taskResults
     };
@@ -1087,7 +1186,10 @@ export function EnhancedAgentSwarmManagementComponent() {
           {/* Existing Add Agent Dialog */}
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="bg-gray-50 text-gray-900 border-gray-200 hover:bg-gray-100">
+              <Button 
+                variant="outline" 
+                className="bg-gray-50 text-gray-900 border-gray-200 hover:bg-gray-100"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Add Agent
               </Button>
@@ -1145,7 +1247,7 @@ export function EnhancedAgentSwarmManagementComponent() {
                     <Label htmlFor="systemPrompt" className="text-right">System Prompt</Label>
                     <Textarea id="systemPrompt" name="systemPrompt" className="col-span-3" />
                   </div>
-                  <div className="grid grid-cols-4 items-center gap-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
                     <Label htmlFor="dataSource" className="text-right">Data Source</Label>
                     <Select name="dataSource">
                       <SelectTrigger className="col-span-3">
@@ -1193,6 +1295,10 @@ export function EnhancedAgentSwarmManagementComponent() {
                   <Upload className="w-4 h-4 mr-2" />
                   Load JSON
                 </label>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={shareFlowLink}>
+                <Share className="w-4 h-4 mr-2" />
+                Share Link
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -1247,19 +1353,7 @@ export function EnhancedAgentSwarmManagementComponent() {
               </div>
             </TabsContent>
             <TabsContent value="versions">
-              <h2 className="text-lg font-semibold mb-4">Versions</h2>
-              <Select value={selectedVersion || undefined} onValueChange={loadVersion}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select version" />
-                </SelectTrigger>
-                <SelectContent>
-                  {versions.map((version) => (
-                    <SelectItem key={version.id} value={version.id}>
-                      {new Date(version.timestamp).toLocaleString()}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <VersionsTabContent />
             </TabsContent>
           </Tabs>
         </div>
