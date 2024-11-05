@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import LoadingSpinner from '@/shared/components/loading-spinner';
-import Input from '@/shared/components/ui/Input';
+import Input from '@/shared/components/ui/Input/index';
 import { useToast } from '@/shared/components/ui/Toasts/use-toast';
 import useToggle from '@/shared/hooks/toggle';
 import { cn } from '@/shared/utils/cn';

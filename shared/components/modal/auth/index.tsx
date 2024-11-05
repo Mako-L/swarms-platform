@@ -4,7 +4,7 @@ import Logo from '@/shared/components/icons/Logo';
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
 import React from 'react';
 import { useAuthContext } from '@/shared/components/ui/auth.provider';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/shared/utils/cn';

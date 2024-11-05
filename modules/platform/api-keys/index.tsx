@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
+import { Button } from '@/shared/components/ui/Button/index';
+import Input from '@/shared/components/ui/Input/index';
 import { useToast } from '@/shared/components/ui/Toasts/use-toast';
 import {
   Dialog,

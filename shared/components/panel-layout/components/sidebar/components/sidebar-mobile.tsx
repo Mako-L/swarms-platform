@@ -9,7 +9,7 @@ import {
   DrawerContent,
   DrawerTrigger,
 } from '@/shared/components/ui/drawer';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { NavMenuPropsKeys, SIDE_BAR_MENU } from '../../const';
 import {
   Collapsible,

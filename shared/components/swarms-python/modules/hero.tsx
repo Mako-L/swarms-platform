@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { Github, MessageCircle } from 'lucide-react';
 import Link from 'next/link';
 import { DISCORD, SWARMS_GITHUB } from '@/shared/constants/links';

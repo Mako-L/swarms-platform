@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { signInWithOAuth } from '@/shared/utils/auth-helpers/client';
 import { type Provider } from '@supabase/supabase-js';
 import { Github } from 'lucide-react';

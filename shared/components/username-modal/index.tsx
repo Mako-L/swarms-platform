@@ -4,8 +4,8 @@ import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { useToast } from '../ui/Toasts/use-toast';
 import { trpc } from '@/shared/utils/trpc/trpc';
 import Modal from '../modal';
-import Input from '../ui/Input';
-import { Button } from '../ui/Button';
+import Input from '../ui/Input/index';
+import { Button } from '@/shared/components/ui/Button/index';
 import LoadingSpinner from '../loading-spinner';
 import { cn } from '@/shared/utils/cn';
 

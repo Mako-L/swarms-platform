@@ -15,8 +15,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Button } from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
+import { Button } from '@/shared/components/ui/Button/index';
+import Input from '@/shared/components/ui/Input/index';
 import { cn } from '@/shared/utils/cn';
 import { useOrganizationStore } from '@/shared/stores/organization';
 import LoadingSpinner from '@/shared/components/loading-spinner';

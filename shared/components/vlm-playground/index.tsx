@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { trpc } from '@/shared/utils/trpc/trpc';
-import { Button } from '../ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import LoadingSpinner from '../loading-spinner';
 import EditorProvider from '../ui/editor.provider';
 import Playground from './playground';

@@ -11,7 +11,7 @@ import s from './Navbar.module.css';
 import { DISCORD, PLATFORM, SWARMS_GITHUB } from '@/shared/constants/links';
 import { cn } from '@/shared/utils/cn';
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from '../drawer';
-import { Button } from '../Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { Menu, X } from 'lucide-react';
 
 interface NavlinksProps {

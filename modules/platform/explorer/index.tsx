@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import AddSwarmModal from './components/add-swarm-modal';
-import Input from '@/shared/components/ui/Input';
+import Input from '@/shared/components/ui/Input/index';
 import useModels from './hook/models';
 import { explorerOptions } from '@/shared/constants/explorer';
 import AddPromptModal from './components/add-prompt-modal';

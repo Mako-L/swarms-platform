@@ -4,7 +4,7 @@ import React, { Dispatch, SetStateAction, useRef, useState } from 'react';
 import { languages } from '../code-editor/config';
 import { cn } from '@/shared/utils/cn';
 import CodePlayground from '../code-editor';
-import Input from '../ui/Input';
+import Input from '../ui/Input/index';
 import { Slider } from '../ui/slider';
 import { useEditorContext } from '../ui/editor.provider';
 import { EditorType, LanguageType } from '../code-editor/type';

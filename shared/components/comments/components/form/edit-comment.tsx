@@ -9,7 +9,7 @@ import React, {
 import { Textarea } from '@/shared/components/ui/textarea';
 
 import { Dialog, DialogContent } from '@/shared/components/ui/dialog';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { useToast } from '@/shared/components/ui/Toasts/use-toast';
 import { useAuthContext } from '@/shared/components/ui/auth.provider';
 import { trpc } from '@/shared/utils/trpc/trpc';
