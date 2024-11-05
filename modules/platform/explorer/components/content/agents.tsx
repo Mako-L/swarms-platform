@@ -1,7 +1,7 @@
 'use client';
 
 import LoadingSpinner from '@/shared/components/loading-spinner';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { makeUrl } from '@/shared/utils/helpers';
 import React from 'react';
 import InfoCard from '../info-card';

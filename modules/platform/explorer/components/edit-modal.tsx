@@ -1,6 +1,6 @@
 import Modal from '@/shared/components/modal';
-import { Button } from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
+import { Button } from '@/shared/components/ui/Button/index';
+import Input from '@/shared/components/ui/Input/index';
 import {
   Select,
   SelectContent,

@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { generateText } from 'ai';
 
 // UI Components
-import { Button } from '../ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import {
   Card,
   CardContent,

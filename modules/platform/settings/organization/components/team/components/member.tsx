@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import useToggle from '@/shared/hooks/toggle';
 import { useOnClickOutside } from '@/shared/hooks/onclick-outside';
 import { cn } from '@/shared/utils/cn';

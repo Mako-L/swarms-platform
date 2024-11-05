@@ -15,8 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Button } from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
+import { Button } from '@/shared/components/ui/Button/index';
+import Input from '@/shared/components/ui/Input/index';
 import { UserOrganizationProps, UserOrganizationsProps } from '../../types';
 import { useOrganizationStore } from '@/shared/stores/organization';
 import LoadingSpinner from '@/shared/components/loading-spinner';

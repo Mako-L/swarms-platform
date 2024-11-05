@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@/shared/components/ui/Button';
+import { Button } from '@/shared/components/ui/Button/index';
 import { cn } from '@/shared/utils/cn';
 import React, { useEffect, useState } from 'react';
 import MonthPicker from './components/month-picker';

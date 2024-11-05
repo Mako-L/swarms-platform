@@ -8,7 +8,7 @@ import {
   getDefaultSignInView,
   getRedirectMethod,
 } from '@/shared/utils/auth-helpers/settings';
-import Card from '@/shared/components/ui/Card';
+import Card from '@/shared/components/ui/Card/index';
 import PasswordSignIn from '@/shared/components/ui/AuthForms/PasswordSignIn';
 import EmailSignIn from '@/shared/components/ui/AuthForms/EmailSignIn';
 import Separator from '@/shared/components/ui/AuthForms/Separator';

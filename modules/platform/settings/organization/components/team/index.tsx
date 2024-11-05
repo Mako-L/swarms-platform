@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import Input from '@/shared/components/ui/Input';
+import Input from '@/shared/components/ui/Input/index';
 import TeamMember from './components/member';
 import InviteModal from './components/invite-modal';
 import { cn } from '@/shared/utils/cn';

@@ -1,7 +1,7 @@
 import LoadingSpinner from '@/shared/components/loading-spinner';
 import Modal from '@/shared/components/modal';
-import { Button } from '@/shared/components/ui/Button';
-import Input from '@/shared/components/ui/Input';
+import { Button } from '@/shared/components/ui/Button/index';
+import Input from '@/shared/components/ui/Input/index';
 import { useToast } from '@/shared/components/ui/Toasts/use-toast';
 import { debounce } from '@/shared/utils/helpers';
 import { trpc } from '@/shared/utils/trpc/trpc';

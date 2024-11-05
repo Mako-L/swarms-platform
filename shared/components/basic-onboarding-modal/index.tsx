@@ -3,8 +3,8 @@
 import useOnboardingHelper from '@/shared/hooks/onboarding-helper';
 import Modal from '../modal';
 import React, { useEffect, useState } from 'react';
-import Input from '../ui/Input';
-import { Button } from '../ui/Button';
+import Input from '../ui/Input/index';
+import { Button } from '@/shared/components/ui/Button/index';
 import {
   Select,
   SelectContent,
